@@ -1,6 +1,6 @@
 {
   "name": "@attivio/suit",
-  "version": "0.0.35",
+  "version": "0.0.46",
   "description": "Attivio SUIT, the Search UI Toolkit, is a library for creating search clients for searching the Attivio platform.",
   "keywords": [
     "Attivio",
@@ -11,7 +11,7 @@
     "React",
     "react-component"
   ],
-  "homepage": "attivio.com",
+  "homepage": "http://www.attivio.com",
   "bugs": {
     "url": "https://github.com/attivio/suit/issues",
     "email": "suitbugs@attivio.com"
@@ -41,7 +41,7 @@
     "validateComponents": "./scripts/validateComponents.sh",
     "fullbuild": "./scripts/fullbuild.sh",
     "updateversion": "./scripts/updateversion.sh",
-    "publish": "./scripts/publish.sh"
+    "publishlib": "./scripts/publishlib.sh"
   },
   "dependencies": {
     "@mapbox/extent": "^0.4.0",

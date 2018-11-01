@@ -6,6 +6,7 @@ import Facet from './Facet';
 
 import SearchFacet from '../api/SearchFacet';
 import ObjectUtils from '../util/ObjectUtils';
+import MoreListFacetContents from './MoreListFacetContents';
 
 type FacetInsightsProps = {
   /** The facet field names that should be displayed as pie charts */
@@ -128,15 +129,25 @@ export default class FacetInsights extends React.Component<FacetInsightsDefaultP
     let result;
     const facet = facetMap.get(fieldName);
     if (facet) {
-      const displayType = this.getFacetDisplayType(fieldName);
+      // const displayType = this.getFacetDisplayType(fieldName);
+      const contents = (
+        <MoreListFacetContents
+          buckets={facet.buckets}
+          maxBuckets={this.props.maxFacetBuckets}
+          entityColors={this.props.entityColors}
+          addFacetFilter={() => {
+            alert('Want to add facet filter');
+          }}
+        />
+      );
       result = (
         <Facet
+          contents={contents}
+          name={facet.findLabel()}
+          field={fieldName}
           facet={facet}
           key={fieldName}
-          maxBuckets={this.props.maxFacetBuckets}
-          type={displayType}
           bordered
-          entityColors={this.props.entityColors}
         />
       );
     } else {

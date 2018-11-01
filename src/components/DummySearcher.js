@@ -305,10 +305,7 @@ export default class DummySearcher extends React.Component<DummySearcherDefaultP
    * new one.
    */
   addFacetFilter(facetName: string, bucketLabel: string, filter: string) {
-    const newFF = new FacetFilter();
-    newFF.facetName = facetName;
-    newFF.bucketLabel = bucketLabel;
-    newFF.filter = filter;
+    const newFF = new FacetFilter(facetName, bucketLabel, filter);
 
     const updatedFacetFilters = [];
     const facetFilters = this.state.facetFilters;

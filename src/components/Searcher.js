@@ -316,10 +316,7 @@ class Searcher extends React.Component<SearcherDefaultProps, SearcherProps, Sear
   static deserializeFacetFilters(facetFilters: Array<string>): Array<FacetFilter> {
     return facetFilters.map((facetFilterString: string): FacetFilter => {
       const parts: Array<string> = facetFilterString.split(',+');
-      const facetFilter = new FacetFilter();
-      facetFilter.facetName = parts[0];
-      facetFilter.bucketLabel = parts[1];
-      facetFilter.filter = parts[2];
+      const facetFilter = new FacetFilter(parts[0], parts[1], parts[2]);
       return facetFilter;
     });
   }
@@ -925,10 +922,7 @@ class Searcher extends React.Component<SearcherDefaultProps, SearcherProps, Sear
    * new one.
    */
   addFacetFilter(facetName: string, bucketLabel: string, filter: string) {
-    const newFF = new FacetFilter();
-    newFF.facetName = facetName;
-    newFF.bucketLabel = bucketLabel;
-    newFF.filter = filter;
+    const newFF = new FacetFilter(facetName, bucketLabel, filter);
 
     const updatedFacetFilters = [];
     const facetFilters = this.state.facetFilters;

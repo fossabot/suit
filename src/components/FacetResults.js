@@ -24,13 +24,16 @@ export type FacetDisplayType = 'piechart' | 'barchart' | 'columnchart' | 'barlis
 /**
  * This is the definition of a facet renderer. It is passed a facet from
  * the search results, the facet's position in the list, and the type, if any,
- * from the lists of facet types in the configuration.
+ * from the lists of facet types in the configuration). It also receives the
+ * list of all facet values in case it depends on more than one (e.g. the
+ * sentiment tag cloud facet displays the values in both the positive and
+ * negative sentiment facets).
  * It should return either a React component that will be rendered as the
  * facet's contents or null if the facet shouldn't be rendered by this function.
  * If no FacetContentsRenderer functions handle the rendering, then the facet
  * will be rendered by one of the default facet content types.
  */
-export type FacetContentsRenderer = (facet: SearchFacet, position: number, type: FacetDisplayType) => any;
+export type FacetContentsRenderer = (facet: SearchFacet, position: number, type: FacetDisplayType, allFacets: Array<SearchFacet>) => any;
 
 type FacetResultsProps = {
   /** The facet field names that should be displayed as pie charts */
@@ -138,10 +141,57 @@ export default class FacetResults extends React.Component<FacetResultsDefaultPro
     return false;
   }
 
+  static pushFacetToResults(facets: Array<any>, facet: SearchFacet, contents: any) {
+    // Prefer the display name but fall back to the name field
+    const name = facet.findLabel();
+    facets.push((
+      <Facet
+        name={name}
+        field={facet.field}
+        contents={contents}
+        collapse
+      />
+    ));
+  }
+
   constructor(props: FacetResultsProps) {
     super(props);
     (this: any).addFacetFilter = this.addFacetFilter.bind(this);
     (this: any).addTimeSeriesFilter = this.addTimeSeriesFilter.bind(this);
+  }
+
+  /**
+   * Determine the type to use when displaying a facet based on the configuration's lists of
+   * facet names for each type. Custom renderers are free to ignore the type when displaing
+   * a facet that they know about...
+   */
+  getFacetDisplayType(field: string): FacetDisplayType {
+    if (FacetResults.matchesFacetList(field, this.props.pieChartFacets)) {
+      return 'piechart';
+    }
+    if (FacetResults.matchesFacetList(field, this.props.barChartFacets)) {
+      return 'barchart';
+    }
+    if (FacetResults.matchesFacetList(field, this.props.columnChartFacets)) {
+      return 'columnchart';
+    }
+    if (FacetResults.matchesFacetList(field, this.props.barListFacets)) {
+      return 'barlist';
+    }
+    if (FacetResults.matchesFacetList(field, this.props.tagCloudFacets)) {
+      return 'tagcloud';
+    }
+    if (FacetResults.matchesFacetList(field, this.props.timeSeriesFacets)) {
+      return 'timeseries';
+    }
+    if (FacetResults.matchesFacetList(field, this.props.sentimentFacets)) {
+      return 'sentiment';
+    }
+    if (FacetResults.matchesFacetList(field, this.props.geoMapFacets)) {
+      return 'geomap';
+    }
+
+    return 'list';
   }
 
   addFacetFilter(bucket: SearchFacetBucket | any, customBucketLabel: ?string) {
@@ -186,6 +236,32 @@ export default class FacetResults extends React.Component<FacetResultsDefaultPro
     }
   }
 
+  shouldShow(facet: SearchFacet): boolean {
+    if (this.props.showEmptyFacets || (facet && facet.buckets && facet.buckets.length > 0)) {
+      return true;
+    }
+    return false;
+  }
+
+  findFacetContents(facet: SearchFacet, index: number): any {
+    let result = null;
+    if (this.shouldShow(facet)) {
+      const type = this.getFacetDisplayType(facet.field);
+      // Look through the registered rendering functions to find one who can render it
+      for (let i = 0; i < this.props.renderers.length; i += 1) {
+        const renderer = this.props.renderers[i];
+        result = renderer(facet, index, type);
+        if (result) {
+          break;
+        }
+      }
+      if (!result) {
+        result = this.renderBuiltInFacetType(facet, type);
+      }
+    }
+    return result;
+  }
+
   renderBuiltInFacetType(facet: SearchFacet, type: FacetDisplayType): any {
     const facetColor = this.props.entityColors.has(facet.field) ? this.props.entityColors.get(facet.field) : null;
     let facetContents;
@@ -203,7 +279,7 @@ export default class FacetResults extends React.Component<FacetResultsDefaultPro
             buckets={facet.buckets}
             addFacetFilter={this.addFacetFilter}
           />
-          );
+        );
         break;
       case 'columnchart':
         facetContents = facetColor ? (
@@ -219,7 +295,7 @@ export default class FacetResults extends React.Component<FacetResultsDefaultPro
             addFacetFilter={this.addFacetFilter}
             columns
           />
-          );
+        );
         break;
       case 'piechart':
         facetContents = (
@@ -242,7 +318,7 @@ export default class FacetResults extends React.Component<FacetResultsDefaultPro
             buckets={facet.buckets}
             addFacetFilter={this.addFacetFilter}
           />
-          );
+        );
         break;
       case 'tagcloud':
         facetContents = (
@@ -294,79 +370,6 @@ export default class FacetResults extends React.Component<FacetResultsDefaultPro
     return facetContents;
   }
 
-  /**
-   * Determine the type to use when displaying a facet based on the configuration's lists of
-   * facet names for each type. Custom renderers are free to ignore the type when displaing
-   * a facet that they know about...
-   */
-  getFacetDisplayType(field: string): FacetDisplayType {
-    if (FacetResults.matchesFacetList(field, this.props.pieChartFacets)) {
-      return 'piechart';
-    }
-    if (FacetResults.matchesFacetList(field, this.props.barChartFacets)) {
-      return 'barchart';
-    }
-    if (FacetResults.matchesFacetList(field, this.props.columnChartFacets)) {
-      return 'columnchart';
-    }
-    if (FacetResults.matchesFacetList(field, this.props.barListFacets)) {
-      return 'barlist';
-    }
-    if (FacetResults.matchesFacetList(field, this.props.tagCloudFacets)) {
-      return 'tagcloud';
-    }
-    if (FacetResults.matchesFacetList(field, this.props.timeSeriesFacets)) {
-      return 'timeseries';
-    }
-    if (FacetResults.matchesFacetList(field, this.props.sentimentFacets)) {
-      return 'sentiment';
-    }
-    if (FacetResults.matchesFacetList(field, this.props.geoMapFacets)) {
-      return 'geomap';
-    }
-
-    return 'list';
-  }
-
-  shouldShow(facet: SearchFacet): boolean {
-    if (this.props.showEmptyFacets || (facet && facet.buckets && facet.buckets.length > 0)) {
-      return true;
-    }
-    return false;
-  }
-
-  findFacetContents(facet: SearchFacet, index: number): any {
-    let result = null;
-    if (this.shouldShow(facet)) {
-      const type = this.getFacetDisplayType(facet.field);
-      // Look through the registered rendering functions to find one who can render it
-      for (let i = 0; i < this.props.renderers.length; i += 1) {
-        const renderer = this.props.renderers[i];
-        result = renderer(facet, index, type);
-        if (result) {
-          break;
-        }
-      }
-      if (!result) {
-        result = renderBuiltInFacetType(facet, type);
-      }
-    }
-    return result;
-  }
-
-  pushFacetToResults(facets: Array<any>, facet: SearchFacet, contents: any) {
-    // Prefer the display name but fall back to the name field
-    const name = facet.findLabel();
-    facets.push((
-      <Facet
-        name={name}
-        field={facet.field}
-        contents={facetContents}
-        collapse
-      />
-    ));
-  }
-
   renderFacets() {
     const searcher = this.context.searcher;
     const facets = searcher.state.response ? searcher.state.response.facets : null;
@@ -382,14 +385,14 @@ export default class FacetResults extends React.Component<FacetResultsDefaultPro
         if (facet) {
           i += 1;
           const facetContents = this.findFacetContents(facet, i);
-          this.pushFacetToResults(results, facet, facetContents);
+          FacetResults.pushFacetToResults(results, facet, facetContents);
         }
       });
       facets.forEach((facet: SearchFacet) => {
         if (!this.props.orderHint.includes(facet.name)) {
           i += 1;
           const facetContents = this.findFacetContents(facet, i);
-          this.pushFacetToResults(results, facet, facetContents);
+          FacetResults.pushFacetToResults(results, facet, facetContents);
         }
       });
       return results;
@@ -399,7 +402,7 @@ export default class FacetResults extends React.Component<FacetResultsDefaultPro
 
   render() {
     const facets = this.renderFacets();
-  
+
     return (
       <div className="facetResults">
         {facets}

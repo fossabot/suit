@@ -27,8 +27,10 @@ type Doc360BreadcrumbsState = {
   back: boolean;
 };
 
-class Doc360Breadcrumbs extends React.Component<void, Doc360BreadcrumbsProps, Doc360BreadcrumbsState> {
+class Doc360Breadcrumbs extends React.Component<void, Doc3610BreadcrumbsProps, Doc360BreadcrumbsState> {
   static displayName = 'Doc360Breadcrumbs';
+
+  static HistoryEntry;
 
   constructor(props: Doc360BreadcrumbsProps) {
     super(props);
@@ -109,5 +111,7 @@ class Doc360Breadcrumbs extends React.Component<void, Doc360BreadcrumbsProps, Do
     return <Breadcrumbs crumbs={crumbs} onClick={this.handleClick} />;
   }
 }
+
+Doc360Breadcrumbs.HistoryEntry = HistoryEntry;
 
 export default withRouter(Doc360Breadcrumbs);

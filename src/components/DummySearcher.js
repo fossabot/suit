@@ -17,6 +17,7 @@ type DummySearcherProps = {
   defaultQuery: string;
   defaultQueryResponse: QueryResponse | null;
   defaultError: string | null;
+  defaultFacetFilters: Array<FacetFilter>;
   children: Children;
 };
 
@@ -30,6 +31,7 @@ type DummySearcherDefaultProps = {
   defaultQuery: string;
   defaultQueryResponse: QueryResponse | null;
   defaultError: string | null;
+  defaultFacetFilters: Array<FacetFilter>;
 };
 
 type DummySearcherState = {
@@ -62,6 +64,7 @@ export default class DummySearcher extends React.Component<DummySearcherDefaultP
     defaultDebug: false,
     defaultResultsPerPage: 10,
     defaultBusinessCenterProfile: null,
+    defaultFacetFilters: [],
     defaultSort: ['.score:DESC'],
     defaultQuery: '*:*',
     defaultQueryResponse: null,
@@ -96,7 +99,7 @@ export default class DummySearcher extends React.Component<DummySearcherDefaultP
       queryLanguage: this.props.defaultQueryLanguage,
       sort: this.props.defaultSort,
       relevancyModels: this.props.defaultRelevancyModels,
-      facetFilters: [],
+      facetFilters: this.props.defaultFacetFilters,
       geoFilters: [],
       resultsPerPage: this.props.defaultResultsPerPage,
       resultsOffset: 0,

@@ -25,7 +25,7 @@ type MapFacetContentsProps = {
   addFacetFilter: (bucket: SearchFacetBucket) => void;
   /** The size for the component. An object with height and width properties. Optional. */
   size: any;
-  /** The public key with which to connect to the mapbox public apis. */
+  /** The public key with which to connect to the Mapbox public apis. */
   mapboxKey: string;
 };
 
@@ -43,7 +43,7 @@ type MapFacetContentsState = {
 };
 
 /**
- * Component to display the buckets of a facet using a MapBox map.
+ * Component to display the buckets of a facet using a Mapbox map.
  */
 class MapFacetContents extends React.Component<MapFacetContentsDefaultProps, MapFacetContentsProps, MapFacetContentsState> {
   static defaultProps = {

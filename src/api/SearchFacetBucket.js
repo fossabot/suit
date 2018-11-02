@@ -15,7 +15,7 @@ export default class SearchFacetBucket {
     );
   }
 
-  constructor(value: any, label: string, count: number, filter: string, min: string | null = null, max: string | null = null) {
+  constructor(value: any, label: string | null, count: number, filter: string, min: string | null = null, max: string | null = null) {
     this.value = value;
     this.label = label;
     this.count = count;

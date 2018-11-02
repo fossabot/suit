@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import sizeMe from 'react-sizeme';
 
 import Configurable from '../components/Configurable';
+import MoreListFacetContents from '../components/MoreListFacetContents';
 import SearchFacetBucket from '../api/SearchFacetBucket';
 import PositionUtils from '../util/PositionUtils';
 import ObjectUtils from '../util/ObjectUtils';
@@ -43,7 +44,10 @@ type MapFacetContentsState = {
 };
 
 /**
- * Component to display the buckets of a facet using a Mapbox map.
+ * Component to display the buckets of a facet using a Mapbox map. It expects the buckets' values
+ * to be objects with latitude and longitude values.
+ * If no Mapbox key is provided (either by passing it directly here or by configuring it globally),
+ * the this will render a list view instead.
  */
 class MapFacetContents extends React.Component<MapFacetContentsDefaultProps, MapFacetContentsProps, MapFacetContentsState> {
   static defaultProps = {
@@ -78,6 +82,17 @@ class MapFacetContents extends React.Component<MapFacetContentsDefaultProps, Map
     });
     filter = filter.substr(0, filter.length - 1).concat(')');
     return filter;
+  }
+
+  static stringifyLocation(location: any): string {
+    if (location) {
+      if (Object.prototype.hasOwnProperty.call(location, 'longitude') &&
+        Object.prototype.hasOwnProperty.call(location, 'latitude')) {
+        return PositionUtils.latLongString(location.latitude, location.longitude);
+      }
+      return `${location}`;
+    }
+    return '';
   }
 
   constructor(props: MapFacetContentsProps) {
@@ -186,9 +201,10 @@ class MapFacetContents extends React.Component<MapFacetContentsDefaultProps, Map
   }
 
   render() {
-    const Marker = ReactMapboxGl.Marker;
-    const ZoomControl = ReactMapboxGl.ZoomControl;
     if (StringUtils.notEmpty(this.props.mapboxKey)) {
+      const Marker = ReactMapboxGl.Marker;
+      const ZoomControl = ReactMapboxGl.ZoomControl;
+
       const Map = ReactMapboxGl.Map({
         accessToken: this.props.mapboxKey,
         attributionControl: false,
@@ -335,9 +351,22 @@ class MapFacetContents extends React.Component<MapFacetContentsDefaultProps, Map
         </div>
       );
     }
+    // No Mapbox key...
+    // Convert the lat/long bucket values to be human readable strings like "18°58′30″N 72°49′33″E"
+    const humanReadableBuckets = this.props.buckets.map((bucket: SearchFacetBucket) => {
+      const coords = MapFacetContents.stringifyLocation(bucket.value);
+      const label = bucket.label ? `${bucket.label} \u2014 ${coords}` : coords;
+      return new SearchFacetBucket(coords, label, bucket.count, bucket.filter, bucket.min, bucket.max);
+    });
     return (
-      <div className="none">
-        You must configure a Mapbox key to display map facets.
+      <div>
+        <MoreListFacetContents
+          buckets={humanReadableBuckets}
+          addFacetFilter={this.props.addFacetFilter}
+        />
+        <div className="none">
+          (Defaulting to a list view; a Mapbox key must be provided to display maps.)
+        </div>
       </div>
     );
   }

@@ -66,4 +66,60 @@ export default class PositionUtils {
     }
     return result;
   }
+
+  /**
+   * Convert the fractional representation of an angle in degrees to a string showing integral
+   * (absolute) values for degrees, minutes, and seconds. If seconds is zero, it is left off
+   * the final result.
+   */
+  static toDegreesMinutesSeconds(orig: number): string {
+    const absOrig = Math.abs(orig);
+    let degrees = Math.trunc(Math.abs(absOrig));
+    const minutesFraction = absOrig - degrees;
+    let minutes = Math.trunc(minutesFraction * 60);
+    const secondsFraction = (minutesFraction * 60) - minutes;
+    let seconds = Math.round(secondsFraction * 60);
+    if (seconds === 60) {
+      minutes += 1;
+      seconds = 0;
+    }
+    if (minutes === 60) {
+      degrees += 1;
+      minutes = 0;
+    }
+
+    if (seconds > 0) {
+      return `${degrees}\u00B0${minutes}\u2032${seconds}\u2033`;
+    }
+    return `${degrees}\u00B0${minutes}\u2032`;
+  }
+
+  /**
+   * Given the latitude and longitude of a geographic point, render a human-readable
+   * string for the coordinates, in the form "39°55′N 116°23′E" (if seconds are
+   * not significant) or "18°58′30″N 72°49′33″E" if they are.
+   */
+  static latLongString(latitude: number, longitude: number): string {
+    let latNS;
+    if (latitude > 0) {
+      latNS = 'N';
+    } else if (latitude < 0) {
+      latNS = 'S';
+    } else {
+      latNS = '';
+    }
+    const latString = `${PositionUtils.toDegreesMinutesSeconds(latitude)}${latNS}`;
+
+    let longEW;
+    if (longitude > 0) {
+      longEW = 'E';
+    } else if (longitude < 0) {
+      longEW = 'W';
+    } else {
+      longEW = '';
+    }
+    const longString = `${PositionUtils.toDegreesMinutesSeconds(longitude)}${longEW}`;
+
+    return `${latString} ${longString}`;
+  }
 }

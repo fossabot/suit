@@ -54,6 +54,19 @@ const regionFacet = new SearchFacet('region', 'region', 'Region', regionFacetBuc
   return accumulator + bucket.count;
 }, 0), regionFacetBuckets);
 
+const geoFacetBuckets = [
+  new SearchFacetBucket({ longitude: 116 + (23 / 60), latitude: 39 + (55 / 60) }, '北京', 310, 'filter string'),
+  new SearchFacetBucket({ longitude: 37 + (37 / 60), latitude: 55 + (45 / 60) }, 'Mосква', 241, 'filter string'),
+  new SearchFacetBucket({ longitude: 72 + (49 / 60) + (33 / 3600), latitude: 18 + (58 / 60) + (30 / 3600) }, 'मुंबई', 191, 'filter string'),
+  // new SearchFacetBucket({ longitude: 39 + (17 / 60), latitude: -(6 + (48 / 60)) }, '\u202Bدار السلام\u202C', 174, 'filter string'),
+  // new SearchFacetBucket({ longitude: 32 + (49 / 60), latitude: 34 + (59 / 60) }, 'חֵיפָה', 'filter string'),
+  new SearchFacetBucket({ longitude: -(46 + (38 / 60)), latitude: -(23 + (33 / 60)) }, 'São Paulo', 135, 'filter string'),
+  new SearchFacetBucket({ longitude: 139 + (41 / 60), latitude: 35 + (41 / 60) }, '東京', 83, 'filter string'),
+];
+const geoFacet = new SearchFacet('region', 'region', 'Region', geoFacetBuckets.reduce((bucket, accumulator) => {
+  return accumulator + bucket.count;
+}, 0), geoFacetBuckets);
+
 /* eslint-disable max-len */
 const dateFacetBuckets = [
   new SearchFacetBucket('', 'August 14, 2017', 55, 'date:FACET(RANGE(\'2017-08-14T00:00:00\', \'2017-08-15T00:00:00\', upper=exclusive))', '2017-08-13T20:00:00.000-0400', '2017-08-14T20:00:00.000-0400'),
@@ -102,6 +115,7 @@ const sampleFacets = {
   locationFacet,
   regionFacet,
   dateFacet,
+  geoFacet,
 };
 
 console.log('sampleFacets:', sampleFacets); // eslint-disable-line 

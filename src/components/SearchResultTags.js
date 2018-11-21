@@ -163,17 +163,16 @@ class SearchResultTags extends React.Component<SearchResultTagsDefaultProps, Sea
 
   render() {
     const outerDivClassName = `attivio-tags ${this.props.vertical ? 'attivio-tags-vertical' : ''}`;
-    const moreLikeThisComponent =
-      this.props.moreLikeThisQuery.length > 0 ? (
-        <a
-          className="attivio-tags-more"
-          onClick={this.moreLikeThis}
-          role="button"
-          tabIndex={0}
-        >
-          More like this
-        </a>
-      ) : '';
+    const moreLikeThisComponent = this.props.moreLikeThisQuery.length > 0 ? (
+      <a
+        className="attivio-tags-more"
+        onClick={this.moreLikeThis}
+        role="button"
+        tabIndex={0}
+      >
+        More like this
+      </a>
+    ) : '';
     let tagList;
     if (this.state.tags.length > 0) {
       tagList = this.state.tags.map((tag) => {

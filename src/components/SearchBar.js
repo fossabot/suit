@@ -104,7 +104,6 @@ class SearchBar extends React.Component<SearchBarDefaultProps, SearchBarProps, S
       query: '',
       recognizing: false,
       suggestions: [],
-
     };
     (this: any).doKeyPress = this.doKeyPress.bind(this);
     (this: any).doSearch = this.doSearch.bind(this);
@@ -328,25 +327,24 @@ class SearchBar extends React.Component<SearchBarDefaultProps, SearchBarProps, S
     }
 
     const suggestionList = this.getSuggestionList();
-    const inputComponent = this.props.autoCompleteUri ?
-      (
-        <AutoCompleteInput
-          uri={`${this.props.baseUri}${this.props.autoCompleteUri}`}
-          updateValue={this.updateQuery}
-          placeholder={placeholder || ''}
-          value={query}
-          className={inputClass}
-        />
-      ) : (
-        <input
-          type="search"
-          className={inputClass}
-          placeholder={placeholder}
-          onChange={this.queryChanged}
-          onKeyDown={this.doKeyPress}
-          value={query}
-        />
-      );
+    const inputComponent = this.props.autoCompleteUri ? (
+      <AutoCompleteInput
+        uri={`${this.props.baseUri}${this.props.autoCompleteUri}`}
+        updateValue={this.updateQuery}
+        placeholder={placeholder || ''}
+        value={query}
+        className={inputClass}
+      />
+    ) : (
+      <input
+        type="search"
+        className={inputClass}
+        placeholder={placeholder}
+        onChange={this.queryChanged}
+        onKeyDown={this.doKeyPress}
+        value={query}
+      />
+    );
 
     return (
       <div className={containerClass}>

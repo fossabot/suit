@@ -10,7 +10,7 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import PropTypes from 'prop-types';
 import sizeMe from 'react-sizeme';
 
-import Configurable from '../components/Configurable';
+import Configurable from './Configurable';
 import SearchFacetBucket from '../api/SearchFacetBucket';
 import PositionUtils from '../util/PositionUtils';
 import ObjectUtils from '../util/ObjectUtils';
@@ -114,8 +114,8 @@ class MapFacetContents extends React.Component<MapFacetContentsDefaultProps, Map
     nextStateTemp.geoFilters = [];
     nextStateTemp.proximityBoosts = [];
     nextStateTemp.updating = '';
-    return !ObjectUtils.deepEquals(this.props.buckets, nextProps.buckets) ||
-           !ObjectUtils.deepEquals(nextStateTemp, stateTemp);
+    return !ObjectUtils.deepEquals(this.props.buckets, nextProps.buckets)
+      || !ObjectUtils.deepEquals(nextStateTemp, stateTemp);
   }
 
   create(e: any) {

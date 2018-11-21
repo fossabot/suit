@@ -40,7 +40,6 @@ type DatePickerState = {
  * date or a starting/ending range.
  */
 export default class DatePicker extends React.Component<void, DatePickerProps, DatePickerState> {
-
   static displayName = 'DatePicker';
 
   constructor(props: DatePickerProps) {

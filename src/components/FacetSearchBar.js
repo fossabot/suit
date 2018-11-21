@@ -136,7 +136,8 @@ class FacetSearchBar extends React.Component<FacetSearchBarDefaultProps, FacetSe
         suggestionsAdded += 1;
         returnVal = (
           <button
-            className={'facet-suggestion'}
+            type="button"
+            className="facet-suggestion"
             key={suggestionsAdded}
             onClick={() => { return this.addFilter(index); }}
             style={{ width: '100%', textAlign: 'left', borderWidth: '0px', backgroundColor: '#FFFFFF' }}
@@ -151,7 +152,7 @@ class FacetSearchBar extends React.Component<FacetSearchBarDefaultProps, FacetSe
     if (contents.length > 0) {
       return (
         <div
-          className={'facet-suggestion'}
+          className="facet-suggestion"
           style={{ width: '100%', border: '1px solid #D2D2D2', borderTop: 'none', passingTop: '11px', position: 'absolute' }}
         >
           <ul role="menu" style={{ marginBottom: 0 }}>

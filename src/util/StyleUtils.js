@@ -21,7 +21,8 @@ export default class StyleUtils {
           const blueString = hexColor.substr(4, 2);
           const blue = parseInt(blueString, 16);
           return [red, green, blue];
-        } else if (hexColor.length === 3) {
+        }
+        if (hexColor.length === 3) {
           const redString = hexColor.substr(0, 1);
           const red = parseInt(redString, 16) * 16;
           const greenString = hexColor.substr(1, 1);

@@ -115,14 +115,14 @@ export default class DummySearcher extends React.Component<DummySearcherDefaultP
     };
   }
 
- /**
+  /**
   * Get the list of fields to use in the query request.
   */
   getFieldList(): Array<string> {
     return this.props.defaultFieldList;
   }
 
- /**
+  /**
    * Used to tell the search results component whether to override
    * the format with the debug format.
    */

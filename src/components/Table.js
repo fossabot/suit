@@ -12,7 +12,7 @@ class TableColumn {
     title: string,
     render: string | (value: any) => any,
     sort: boolean | (a: any, b: any, order: 'asc' | 'desc') => number = false,
-    ) {
+  ) {
     this.title = title;
     this.render = render;
     this.sort = sort;

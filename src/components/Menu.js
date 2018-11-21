@@ -268,16 +268,15 @@ export default class Menu extends React.Component<MenuDefaultProps, MenuProps, v
     }
     const selectionLabel = this.calcSelectionLabel();
 
-    const buttonLabelPrefix = this.props.block && this.props.selection ?
-      (
-        <span>
-          <span
-            className="attivio-model-dot"
-            style={{ backgroundColor: '#f1c541' }}
-          />
-          {' '}
-        </span>
-      ) : null;
+    const buttonLabelPrefix = this.props.block && this.props.selection ? (
+      <span>
+        <span
+          className="attivio-model-dot"
+          style={{ backgroundColor: '#f1c541' }}
+        />
+        {' '}
+      </span>
+    ) : null;
 
     const buttonLabel = (
       <span>

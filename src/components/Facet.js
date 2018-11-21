@@ -160,7 +160,7 @@ export default class Facet extends React.Component<FacetDefaultProps, FacetProps
               buckets={this.props.facet.buckets}
               addFacetFilter={this.addFacetFilter}
             />
-            );
+          );
           break;
         case 'columnchart':
           facetContents = facetColor ? (
@@ -176,7 +176,7 @@ export default class Facet extends React.Component<FacetDefaultProps, FacetProps
               addFacetFilter={this.addFacetFilter}
               columns
             />
-            );
+          );
           break;
         case 'piechart':
           facetContents = (

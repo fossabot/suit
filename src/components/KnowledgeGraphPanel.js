@@ -114,8 +114,8 @@ export default class KnowledgeGraphPanel extends React.Component<KnowledgeGraphP
   }
 
   componentWillReceiveProps(nextProps: KnowledgeGraphPanelProps) {
-    if (this.props.doc !== nextProps.doc || this.props.entityName !== nextProps.entityName ||
-        this.props.entityValue !== nextProps.entityValue) {
+    if (this.props.doc !== nextProps.doc || this.props.entityName !== nextProps.entityName
+        || this.props.entityValue !== nextProps.entityValue) {
       this.loadGraphForDocument(nextProps.doc, nextProps.entityName, nextProps.entityValue);
     }
   }

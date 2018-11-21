@@ -192,6 +192,7 @@ class Masthead extends React.Component<MastheadDefaultProps, MastheadProps, Mast
       <header className="attivio-globalmast attivio-minwidth">
         <div className="attivio-container">
           <button
+            type="button"
             style={{ backgroundColor: 'transparent', borderWidth: 0 }}
             onClick={this.navigateHome}
             className="attivio-globalmast-logo attivio-globalmast-separator after"

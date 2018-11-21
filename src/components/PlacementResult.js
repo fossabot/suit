@@ -59,7 +59,7 @@ export default class PlacementResult extends React.Component<PlacementResultDefa
     return (
       <Card style={{ marginBottom: '10px' }}>
         {this.props.linkUrl ? (
-          <a href={this.props.linkUrl} >
+          <a href={this.props.linkUrl}>
             {contents}
           </a>
         ) : contents}

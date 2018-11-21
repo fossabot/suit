@@ -14,8 +14,8 @@ import FieldNames from '../api/FieldNames';
 
 import ObjectUtils from '../util/ObjectUtils';
 
-import Configurable from '../components/Configurable';
-import Configuration from '../components/Configuration';
+import Configurable from './Configurable';
+import Configuration from './Configuration';
 
 /*
   A NOTE ABOUT THE SEARCHER, THE PAGE'S URL, AND WHEN QUERYING HAPPENS:

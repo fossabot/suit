@@ -57,6 +57,7 @@ export default class WizardSteps extends React.Component<void, WizardStepsProps,
       }
       pageLinks.push((
         <button
+          type="button"
           disabled={disabled}
           onClick={onClick}
           style={stepStyle}

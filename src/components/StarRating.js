@@ -37,6 +37,8 @@ export default class StarRating extends React.Component<StarRatingDefaultProps, 
 
   static displayName = 'StarRating';
 
+  starDivElements: Array<?HTMLDivElement> = [];
+
   constructor(props: StarRatingProps) {
     super(props);
     this.state = {
@@ -61,8 +63,6 @@ export default class StarRating extends React.Component<StarRatingDefaultProps, 
       });
     });
   }
-
-  starDivElements: Array<?HTMLDivElement> = [];
 
   render() {
     const origStars = this.state.stars;

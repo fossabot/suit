@@ -76,8 +76,10 @@ export default class ExpertCard extends React.Component<ExpertCardDefaultProps, 
 
     // Only show these if they're set on the component
     const expertId = this.props.expertId ? [<dt key="expertId-label">Employee</dt>, <dd key="expertId-value">{this.props.expertId}</dd>] : ''; // eslint-disable-line max-len
-    const expertBirthDate = this.props.expertBirthDate ?
-      [<dt key="expertDOB-label">Birth Date</dt>, <dd key="expertDOB-value"><FormattedDate date={this.props.expertBirthDate} format={DateFormat.MEDIUM_DATE} /></dd>] : ''; // eslint-disable-line max-len
+    const expertBirthDate = this.props.expertBirthDate ? [
+      <dt key="expertDOB-label">Birth Date</dt>,
+      <dd key="expertDOB-value"><FormattedDate date={this.props.expertBirthDate} format={DateFormat.MEDIUM_DATE} /></dd>,
+    ] : '';
 
     let authorOf = '';
     if (this.props.authorCount > 0) {

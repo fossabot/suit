@@ -4,6 +4,7 @@ import React from 'react';
 
 import Button from 'react-bootstrap/lib/Button';
 import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
+import Modal from 'react-bootstrap/lib/Modal';
 
 import Scrollable from './Scrollable';
 import WizardSteps, { WizardStep } from './WizardSteps';
@@ -32,6 +33,10 @@ export class WizardPageDefinition {
    * page is purely informational, you can omit this method.
    */
   getValue: null | () => any;
+  /**
+   * ????
+   */
+  pageTitle: string | React$Element<*> | null;
   /**
    * Callback used to validate the current state of the page. Returns a
    * promise so that you may make asynchronous calls to the server
@@ -68,6 +73,7 @@ export class WizardPageDefinition {
   constructor(
     key: string,
     title: string,
+    pageTitle: string | React$Element<*> | null,
     page: React$Element <*>,
     getValue: null | () => any = null,
     validate: null | (values: Map<string, any>) => Promise < void> = null,
@@ -77,6 +83,7 @@ export class WizardPageDefinition {
     this.key = key;
     this.title = title;
     this.getValue = getValue;
+    this.pageTitle = pageTitle;
     this.page = page;
     this.optional = optional;
     this.validate = validate;
@@ -98,7 +105,12 @@ export class WizardPageState {
   }
 }
 
+
 type WizardProps = {
+  /**
+   * The title to show at the top of the wizard's dialog box.
+   */
+  title: string;
   /**
    * An array of WizardPageDefinitions defining the pages to show.
    */
@@ -114,24 +126,38 @@ type WizardProps = {
    * If set, then the wizard will be shown.
    */
   show: boolean;
+  /**
+   * The size of the wizard, if you want it larger or smaller
+   * than the default. Set to 'small' or 'large' or leave unset
+   * for the medium size.
+   */
+  size: 'small' | 'large' | null;
+  /**
+   * This is a map showing which pages consider themselves valid.
+   */
+  validity: Map<string, boolean>;
+};
+
+type WizardDefaultProps = {
+  size: 'small' | 'large' | null;
 };
 
 type WizardState = {
   visiblePages: Array<string>;
   currentKey: string;
   currentPage: WizardPageDefinition;
-  currentPageValid: boolean;
-  currentPageError: string | null;
 };
 
 /**
  * This component presents a series of pages which are used by the user, in sequence,
  * to enter data. The pages in the list can be enabled or disabled at any time.
  */
-export default class Wizard extends React.Component<void, WizardProps, WizardState> {
-  static WizardPageDefinition;
+export default class Wizard extends React.Component<WizardDefaultProps, WizardProps, WizardState> {
+  static defaultProps = {
+    size: null,
+  };
 
-  static displayName = 'Wizard';
+  static WizardPageDefinition;
 
   constructor(props: WizardProps) {
     super(props);
@@ -144,8 +170,6 @@ export default class Wizard extends React.Component<void, WizardProps, WizardSta
       visiblePages,
       currentKey: this.props.pages[0].key,
       currentPage: this.props.pages[0],
-      currentPageValid: false,
-      currentPageError: null,
     };
     (this: any).cancel = this.cancel.bind(this);
     (this: any).finish = this.finish.bind(this);
@@ -155,9 +179,21 @@ export default class Wizard extends React.Component<void, WizardProps, WizardSta
 
   state: WizardState;
 
-  componentDidMount() {
-    // Try to validate the first page
-    this.validateCurrentPage();
+  componentWillReceiveProps(newProps: WizardProps) {
+    if (newProps.pages !== this.props.pages) {
+      const visiblePages = [];
+      let currentPage: WizardPageDefinition = this.state.currentPage;
+      newProps.pages.forEach((page: WizardPageDefinition) => {
+        visiblePages.push(page.key);
+        if (page.key === this.state.currentKey) {
+          currentPage = page;
+        }
+      });
+      this.setState({
+        visiblePages,
+        currentPage,
+      });
+    }
   }
 
   getPage(pageKey: string): WizardPageDefinition {
@@ -191,37 +227,9 @@ export default class Wizard extends React.Component<void, WizardProps, WizardSta
     return null;
   }
 
-  getAllPageValues(): Map<string, any> {
-    const values: Map<string, any> = new Map();
-    this.state.visiblePages.forEach((visiblePageKey) => {
-      const page = this.getPage(visiblePageKey);
-      const pageValue = page.getValue ? page.getValue() : {};
-      values.set(visiblePageKey, pageValue);
-    });
-    return values;
-  }
-
-  validateCurrentPage() {
-    const values = this.getAllPageValues();
-    if (this.state.currentPage.validate) {
-      this.state.currentPage.validate(values).then(() => {
-        this.setState({
-          currentPageValid: true,
-          currentPageError: null,
-        });
-      }).catch((error) => {
-        this.setState({
-          currentPageValid: false,
-          currentPageError: error,
-        });
-      });
-    } else {
-      // No callback = always valid
-      this.setState({
-        currentPageValid: true,
-        currentPageError: null,
-      });
-    }
+  currentPageValid(): boolean {
+    const key = this.state.currentPage.key;
+    return this.props.validity.get(key) === true;
   }
 
   cancel() {
@@ -229,22 +237,15 @@ export default class Wizard extends React.Component<void, WizardProps, WizardSta
   }
 
   finish() {
-    const values = this.getAllPageValues();
-    this.props.onFinish(values);
+    this.props.onFinish(true);
   }
 
   changePage(newPageKey: string | null) {
     if (newPageKey) {
       const newPage = this.getPage(newPageKey);
-      const aboutToShow = newPage.aboutToShow;
-      if (aboutToShow !== null) {
-        aboutToShow(this.getAllPageValues());
-      }
       this.setState({
         currentKey: newPageKey,
         currentPage: newPage,
-      }, () => {
-        this.validateCurrentPage();
       });
     }
   }
@@ -284,7 +285,7 @@ export default class Wizard extends React.Component<void, WizardProps, WizardSta
       // We can always go back if there's a previous page
       const canPrevious = !!previousKey;
       // We can go forward if there's a next page AND the current one is valid
-      const canNext = !!nextKey && this.state.currentPageValid;
+      const canNext = !!nextKey && this.currentPageValid();
       // We can finish if there is no next page or the remaining pages are not required
       // AND the current(last) one is valid
       const canFinish = !nextKey || this.doneWithRequired();
@@ -292,13 +293,29 @@ export default class Wizard extends React.Component<void, WizardProps, WizardSta
       const nextStyle = canNext && !canFinish ? 'primary' : 'default';
 
       return (
-        <div style={{ display: 'flex', flexFlow: 'column', height: '100%' }}>
-          <WizardSteps steps={steps} currentStep={this.state.currentKey} goToPage={() => { }} style={{ flex: '0 1 auto' }} />
-          <Scrollable style={{ flex: '1 1 auto' }}>
-            <h3>{this.state.currentPage.title}</h3>
-            {this.state.currentPage.page}
-          </Scrollable>
-          <div style={{ flex: '0 1 40px' }}>
+        <Modal
+          show={this.props.show}
+          bsSize={this.props.size}
+          backdrop="static"
+          keyboard
+        >
+          <Modal.Header>
+            <Modal.Title>{this.props.title}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body style={{ paddingLeft: 0 }}>
+            <div style={{ height: '100%' }}>
+              <WizardSteps
+                steps={steps}
+                currentStep={this.state.currentKey}
+                goToPage={() => { }}
+              />
+              <Scrollable>
+                <h3>{this.state.currentPage.pageTitle}</h3>
+                {this.state.currentPage.page}
+              </Scrollable>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
             <ButtonToolbar style={{ float: 'right' }}>
               <Button
                 onClick={this.cancel}
@@ -326,8 +343,8 @@ export default class Wizard extends React.Component<void, WizardProps, WizardSta
                 Finish
               </Button>
             </ButtonToolbar>
-          </div>
-        </div>
+          </Modal.Footer>
+        </Modal>
       );
     }
     // Not shown...

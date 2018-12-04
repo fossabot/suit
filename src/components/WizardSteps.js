@@ -8,7 +8,12 @@ export class WizardStep {
   enabled: boolean;
   complete: boolean;
 
-  constructor(key: string, title: string, enabled: boolean = true, complete: boolean = false) {
+  constructor(
+    key: string,
+    title: string,
+    enabled: boolean = true,
+    complete: boolean = false,
+  ) {
     this.key = key;
     this.title = title;
     this.enabled = enabled;
@@ -23,20 +28,23 @@ type WizardStepsProps = {
   style: any;
 };
 
+type WizardStepsDefaultProps = {
+  style: any;
+};
+
 /**
  * This component presents a series of pages which are used by the user, in sequence,
  * to enter data. The pages in the list can be enabled or disabled at any time.
  */
-export default class WizardSteps extends React.Component<void, WizardStepsProps, void> {
-  static displayName = 'WizardSteps';
+export default class WizardSteps extends React.Component<WizardStepsDefaultProps, WizardStepsProps, void> {
+  static defaultProps = {
+    style: {},
+  };
 
   static WizardStep;
 
   render() {
     const pageLinks = [];
-    const stepStyle = {
-      width: `calc(100% / ${this.props.steps.length})`,
-    };
     this.props.steps.forEach((step: WizardStep) => {
       let onClick;
       let classNames;
@@ -59,7 +67,6 @@ export default class WizardSteps extends React.Component<void, WizardStepsProps,
         <button
           disabled={disabled}
           onClick={onClick}
-          style={stepStyle}
           key={step.key}
           className={classNames}
         >
@@ -69,9 +76,8 @@ export default class WizardSteps extends React.Component<void, WizardStepsProps,
     });
 
     const mainStyle = Object.assign({}, {
-      width: 'calc(100% - 8px)',
-      paddingLeft: '4px',
-      paddingRight: '4px',
+      minWidth: '150px',
+      float: 'left',
     }, this.props.style);
 
     if (pageLinks.length > 0) {
